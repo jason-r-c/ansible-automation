@@ -1,0 +1,24 @@
+###############################################################
+# // Add the gradle properties file the home directory
+###############################################################
+
+# JCARNEY 3/6/19: Create folder and properties file
+
+- name: Create .gradle directory and set permissions
+  file:
+    path: /home/vagrant/.gradle
+    state: directory
+    owner: "{{vm_provisioner}}"
+    group: "{{vm_provisioner}}"
+
+- name: Add the gradle.properties file and set permissions
+  tags: pf_addgradleproperties
+  blockinfile:
+      owner: "{{vm_provisioner}}"
+      group: "{{vm_provisioner}}"
+      path: /home/vagrant/.gradle/gradle.properties
+      state: present
+      create: yes
+      block: |
+        repoUser={{private_artifactory_user}}
+        repoPassword={{private_artifactory_password}}

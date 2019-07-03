@@ -1,0 +1,58 @@
+###############################################################
+# // Configuration
+###############################################################
+
+# Possibly use localhost also if problems ocurr between Parallels and Virtual Box
+# - hosts: all, localhost
+- hosts: "all"
+
+  vars_files:
+    - /vagrant-shared/vars/vault_vars.yml
+    - /vagrant-shared/vars/dev.yml
+    - /vagrant-private/private_vars.yml
+    - vars/pf_dev.yml
+
+  # Default user for privilege escalation is root
+  become: yes
+
+  roles:
+    # AMONIS: 15/01/2018: Add in whoami to override owner / group
+    - { role: whoami, tags: ["whoami"] }
+
+    # uncomment to display variables used by pf-dev
+    # - { role: pf_displayvars, tags: ["pf_displayvars"] }
+    - { role: installpackages, tags: ["installpackages"] }
+    
+    # JCARNEY 4/6/19: We no longer use Oracle jdk, we use open jdk
+    # - { role: installjava, tags: ["installjava"] }    
+    - { role: pf_javacachedir }    
+    - { role: install_openjdk }    
+
+    - { role: clonepumphouse, tags: ["clonepumphouse"] }
+
+    # JCARNEY 23/10/18: Commented out as not needed 
+    # - { role: tomcat, tags: ["tomcat"] }
+    - { role: mongo, tags: ["mongo"] }
+
+    # JCARNEY 4/6/19: We no longer use Oracle jdk, we use open jdk
+    - { role: letsencrypt_anthropos_io }
+
+    - { role: apache, tags: ["apache"] }
+
+    # JCARNEY 9/1/18: Commented out as not needed by pf-dev
+    # - { role: pumphousev3update, tags: ["pumphousev3update"] }
+
+    # JCARNEY 19/10/18: Commented out as should be using new version
+    # - { role: pfpumphouseconfig, tags: ["pfpumphouseconfig"] }
+
+    # JCARNEY 19/10/18: new version as recommended by Andy L
+    - { role: pumphouseconfig, tags: ["pumphouseconfig"] }
+
+    # JCARNEY 3/6/19: Role that creates /home/vagrant/.gradle/gradle.properties
+    - { role: pf_addgradleproperties, tags: ["pf_addgradleproperties"] }
+
+    - { role: pfsdkman, tags: ["pfsdkman"]}
+    - { role: pfcloneph3, tags: ["pfcloneph3"]}
+    - { role: pfsymlinks, tags: ["pfsymlinks"]}
+
+    

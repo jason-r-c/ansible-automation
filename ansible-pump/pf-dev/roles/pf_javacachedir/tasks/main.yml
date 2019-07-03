@@ -1,0 +1,9 @@
+###############################################################
+# // Create /vagrant/cache folder 
+###############################################################
+
+# create /vagrant/cache folder
+- name: Create /vagrant/cache folder 
+  file:
+    path: /vagrant/cache 
+    state: directory
