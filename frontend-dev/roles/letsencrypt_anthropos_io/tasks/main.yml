@@ -1,0 +1,21 @@
+###############################################################
+# // set up lets encrypt, expanding tar into /etc. tar'd config for *.cnect.to to this server 
+###############################################################
+
+- name: download latets certs from artifactory
+  tags: letsencrypt
+  get_url:
+    dest: "/vagrant/cache/letsencrypt-latest.tgz.gpg"
+    url: "http://repo.aws.anthropos.io/artifactory/libs-local/anthropos/anthropos.io-letsencrypt/latest/letsencrypt-latest.tgz.gpg"
+    force: yes
+    url_username: "{{artifactory_user}}"
+    url_password: "{{artifactory_password}}"
+    
+- name: unpack letsencrypt config
+  tags: letsencrypt                                          
+  shell: gpg --yes --passphrase={{letsencrypt_pwd}} --decrypt /vagrant/cache/letsencrypt-latest.tgz.gpg | tar xv -C /
+  become: true
+  args:
+    executable: /bin/bash
+
+    

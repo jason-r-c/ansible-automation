@@ -1,0 +1,38 @@
+# /etc/apache2/sites-available/902-maintenance-cnect.to.conf
+
+<VirtualHost *:80>
+
+ServerName {{host_name}}
+ServerAdmin ops@anthopos.io
+# the 2 lines below just redirects unsecured HTTP access requests to the TLS-secured HTTPS endpoint configured below
+RewriteEngine On
+RewriteRule ^(.*) https://%{HTTP_HOST}/$1
+</VirtualHost>
+
+<VirtualHost *:443>
+AddOutputFilterByType DEFLATE application/json
+RewriteEngine On
+RewriteOptions Inherit
+
+ServerName {{host_name}}
+
+ServerAdmin ops@anthopos.io
+
+DocumentRoot /var/www/maintenance
+
+# maintenance page
+RewriteCond %{DOCUMENT_ROOT}/maintenance.html -f
+RewriteCond %{SCRIPT_FILENAME} !maintenance.html
+RewriteRule ^.*$ /maintenance.html [R=503,L]
+ErrorDocument 503 /maintenance.html
+Header Set Cache-Control "max-age=0, no-store"
+
+<Directory "/var/www/maintenance">
+Options All
+AllowOverride All
+Require all granted
+</Directory>
+
+{{apache_ssl_conf}}
+
+</VirtualHost>

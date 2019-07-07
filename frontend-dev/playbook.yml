@@ -1,0 +1,34 @@
+###############################################################
+# // Configuration
+###############################################################
+
+# Possibly use localhost also if problems ocurr between Parallels and Virtual Box
+# - hosts: all, localhost
+- hosts: "all"
+
+  vars_files:
+    - /vagrant-shared/vars/vault_vars.yml
+    - /vagrant-shared/vars/dev.yml
+    - /vagrant-private/private_vars.yml
+    - vars/pf_dev.yml
+
+  # Default user for privilege escalation is root
+  become: yes
+
+  roles:
+    # Add in whoami to override owner / group
+    - { role: whoami, tags: ["whoami"] }
+    # uncomment to display variables used by pf-dev
+    # - { role: pf_displayvars, tags: ["pf_displayvars"] }
+    - { role: installpackages, tags: ["installpackages"] }    
+    - { role: pf_javacachedir }    
+    - { role: install_openjdk }    
+    - { role: mongo, tags: ["mongo"] }
+    - { role: apache, tags: ["apache"] }
+    - { role: pumphouseconfig, tags: ["pumphouseconfig"] }
+    - { role: pf_addgradleproperties, tags: ["pf_addgradleproperties"] }
+    - { role: pfsdkman, tags: ["pfsdkman"]}
+    - { role: pfcloneph3, tags: ["pfcloneph3"]}
+    - { role: pfsymlinks, tags: ["pfsymlinks"]}
+
+    

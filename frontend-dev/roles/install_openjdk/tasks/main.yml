@@ -1,0 +1,39 @@
+###############################################################
+# // OpenJDK Java
+###############################################################
+
+- name: download openjdk 
+  tags: openjdk
+  get_url:
+    dest: "/vagrant/cache/openjdk-8u192b12.tar.gz"
+    url: "https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u192-b12/OpenJDK8U-jdk_x64_linux_hotspot_8u192b12.tar.gz"
+    force: no
+
+- name: untar openjdk
+  tags: openjdk
+  become: yes
+  unarchive: 
+    src: "/vagrant/cache/openjdk-8u192b12.tar.gz"
+    dest: /usr/lib/jvm/
+    remote_src: yes
+
+- name: Add symlink to default-java directory
+  tags: java
+  file:
+    src: /usr/lib/jvm/jdk8u192-b12
+    path: /usr/lib/jvm/default-java
+    state: link
+
+- name: update java alternatives
+  tags: openjdk
+  alternatives:
+    name: java
+    path: /usr/lib/jvm/jdk8u192-b12/bin/java  
+    
+- name: add JAVA_HOME to default environment
+  tags: openjdk 
+  lineinfile:
+    dest: /etc/environment
+    regexp: 'JAVA_HOME='
+    line: "JAVA_HOME=/usr/lib/jvm/default-java"
+    state: present     

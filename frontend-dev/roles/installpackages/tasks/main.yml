@@ -1,0 +1,37 @@
+###############################################################
+# // Install APT Packages
+###############################################################
+
+- name: Install CLI Packages
+  tags: installaptpackages
+  apt:
+    state: present
+    name: "{{item}}"
+    update_cache: yes
+    cache_valid_time: 604800
+  with_items:
+    - git
+    - tomcat8
+    - zip
+    - unzip
+    - htop
+    - python-pexpect
+    - python3
+    - python3-pip
+    
+- name: Install GUI Packages
+  tags: installaptpackages
+  when: gui == true
+  apt:
+    state: present
+    name: "{{item}}"
+    update_cache: no
+    cache_valid_time: 604800
+  with_items:
+    - ubuntu-desktop
+    - gnome-session-flashback
+
+- name: Apt upgrade
+  tags: installaptpackages
+  apt:
+    upgrade: dist

@@ -1,0 +1,74 @@
+###############################################################
+# // Mongo DB
+###############################################################
+
+- name: Import Mongo key
+  tags: mongo
+  command: apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
+
+- name: Create apt sources.list for Mongo
+  tags: mongo
+  blockinfile:
+    path:  /etc/apt/sources.list.d/mongodb-org-3.4.list
+    create: yes
+    block: |
+      deb [ arch=amd64,arm64 ] http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse
+
+- name: Grab mongo package
+  tags: mongo
+  apt: name=mongodb-org state=installed update_cache=yes
+
+- name: Add Python3 packages for setup
+  tags: mongo
+  pip:
+    name: "{{item}}"
+    executable: pip3
+  with_items:
+    - pexpect
+    - boto3
+
+- name: Stop Mongo
+  tags: mongo
+  systemd: enabled=yes name=mongod state=stopped
+
+- name: Copy production mongod.conf from config/mongod-prod.conf to /etc/mongod.conf
+  tags: mongo
+  when: vm_type == 'prod'
+  copy:
+    src: /vagrant-shared/config/mongo/mongod-prod.conf
+    dest: /etc/mongod.conf
+
+- name: Copy dev mongod.conf from config/mongod.conf to /etc/mongod.conf
+  tags: mongo
+  when: vm_type != 'prod'
+  copy:
+    src: /vagrant-shared/config/mongo/mongod.conf
+    dest: /etc/mongod.conf
+
+- name: Start Mongo
+  tags: mongo
+  systemd: enabled=yes name=mongod state=started
+
+- name: Add default policy for new users
+  tags: mongo
+  command: python3 /vagrant-shared/config/mongo/add_admin_to_mongo.py {{mongo_admin_password}} {{mongo_password}}
+
+- name: enable mongo auth (1)
+  tags: mongo
+  lineinfile:
+    path: /etc/mongod.conf
+    regexp: 'security:'
+    line: "security:"
+    state: present
+
+- name: enable mongo auth (2)
+  tags: mongo
+  lineinfile:
+    path: /etc/mongod.conf
+    regexp: 'authorization:'
+    line: "  authorization: enabled"
+    state: present
+
+- name: Restart Mongo
+  tags: mongo
+  systemd: name=mongod state=restarted    

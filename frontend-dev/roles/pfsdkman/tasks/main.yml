@@ -1,0 +1,19 @@
+###############################################################
+# // install SDKMan
+###############################################################
+
+- name: Download SDKMan
+  tags: pfsdkman
+  become: yes
+  become_user: "{{owner}}"
+  shell: curl -s "https://get.sdkman.io" | bash
+
+- name: Setup SDKMan && Install Grails
+  tags: pfsdkman
+  become: yes
+  become_user: "{{owner}}"
+  shell: "source \"/home/{{owner}}/.sdkman/bin/sdkman-init.sh\" && sdk install grails 3.3.1 < /dev/null"
+  args:
+     executable: /bin/bash
+
+     

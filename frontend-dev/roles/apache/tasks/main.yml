@@ -1,0 +1,172 @@
+###############################################################
+# // Apache
+###############################################################
+
+# install latest apache, to prevent load bug in default ubuntu version
+# https://bz.apache.org/bugzilla/show_bug.cgi?id=53555
+# add-apt-repository ppa:ondrej/apache2 
+
+- name: install apache repo 
+  tags: apache
+  apt_repository:
+    repo: ppa:ondrej/apache2 
+
+- name: install apache
+  tags: apache
+  apt: name=apache2 state=latest 
+                              
+- name: Clean sites-available default
+  tags: apache
+  file:
+    path: /etc/apache2/sites-available/000-default.conf
+    state: absent
+
+- name: Clean sites-available default ssl
+  tags: apache
+  file:
+    path: /etc/apache2/sites-available/default-ssl.conf
+    state: absent
+
+- name: Clean sites-enabled
+  tags: apache
+  file:
+    path: /etc/apache2/sites-enabled/000-default.conf
+    state: absent
+    
+- name: Copy 001-cnect.to.conf from template
+  tags: apache
+  template:
+    src: /vagrant-shared/config/apache/001-cnect.to.conf.template
+    dest: /etc/apache2/sites-available/001-cnect.to.conf   
+
+- name: Copy 002-static.cnect.to.conf from template 
+  tags: apache
+  template:
+    src: /vagrant-shared/config/apache/002-static.cnect.to.conf.template
+    dest: /etc/apache2/sites-available/002-static.cnect.to.conf   
+
+- name: Copy ports.conf
+  tags: apache
+  become: yes
+  become_user: root
+  copy:
+    src: /vagrant-shared/config/apache/ports.conf
+    dest: /etc/apache2/ports.conf
+
+- name: symlink 001-cnect.to.conf
+  tags: apache
+  become: yes
+  become_user: root
+  file:
+    state: link
+    src: /etc/apache2/sites-available/001-cnect.to.conf
+    path: /etc/apache2/sites-enabled/001-cnect.to.conf
+
+- name: symlink /002-static.cnect.to.conf
+  tags: apache
+  become: yes
+  become_user: root
+  file:
+    state: link
+    src: /etc/apache2/sites-available/002-static.cnect.to.conf
+    path: /etc/apache2/sites-enabled/002-static.cnect.to.conf
+    
+- name: Copy 902-maintenance.cnect.to.conf from template 
+  tags: apache
+  template:
+    src: /vagrant-shared/roles/apache/902-maintenance.cnect.to.conf.template
+    dest: /etc/apache2/sites-available/902-maintenance.cnect.to.conf
+    
+- name: symlink /902-maintenance.cnect.to.conf
+  tags: apache
+  become: yes
+  become_user: root
+  file:
+    state: link
+    src: /etc/apache2/sites-available/902-maintenance.cnect.to.conf
+    path: /etc/apache2/sites-enabled/902-maintenance.cnect.to.conf  
+        
+- name: Change apache module script permissions
+  tags: apache
+  become: yes
+  become_user: root
+  file:
+    path: /vagrant-shared/config/apache/configure_mods.sh
+    mode: 0755 
+
+# @TODO: Consider using the script module as opposed to Command
+- name: Enable apache modules
+  tags: apache
+  become: yes
+  become_user: root
+  command: /vagrant-shared/config/apache/configure_mods.sh
+
+- name: Create certs directory for certs to reside in
+  tags: apache
+  file: 
+    path: /etc/apache2/certs 
+    state: directory
+
+- name: create self-signed ssl keys
+  when: apache_ssl_certs == 'selfsign'
+  tags: apache
+  command: "openssl req -subj /C=\"{{country}}\"/L=\"{{locality}}\"/O=\"{{organisation}}\"/CN=\"{{common_name}} {{company_name}}\" -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/apache2/certs/dev.cnect.to.key -out /etc/apache2/certs/dev.cnect.to.crt"
+  become: yes
+  become_user: root
+  args:
+    chdir: /etc/apache2/certs
+
+# if not using self signed certs, copy  (vault-encrypted) private key
+- name: copy private key from vault
+  when: apache_ssl_certs != 'selfsign'
+  tags: apache
+  copy:
+    src: /vagrant-shared/config/apache/{{apache_ssl_certs}}.key.insecure
+    dest: /etc/apache2/certs/{{apache_ssl_certs}}.key.insecure
+    owner: root
+    group: root
+    mode: 0600
+
+- name: copy crt 
+  when: apache_ssl_certs != 'selfsign'
+  tags: apache
+  copy:
+    src: /vagrant-shared/config/apache/{{apache_ssl_certs}}.crt
+    dest: /etc/apache2/certs/{{apache_ssl_certs}}.crt
+    owner: root
+    group: root
+    mode: 0644
+
+- name: copy intermediate crt 
+  when: apache_ssl_certs != 'selfsign'
+  tags: apache
+  copy:
+    src: /vagrant-shared/config/apache/{{apache_ssl_certs}}.intermed.crt
+    dest: /etc/apache2/certs/{{apache_ssl_certs}}.intermed.crt
+    owner: root
+    group: root
+    mode: 0644
+
+- name: www maintenance dir
+  file:
+    path: /var/www/maintenance
+    state: directory
+    owner: root
+    group: root    
+    mode: 0755
+
+- name: Copy maintenance.html
+  tags: apache
+  become: yes
+  become_user: root
+  copy:
+    src: /vagrant-shared/roles/apache/maintenance.html
+    dest: /var/www/maintenance/maintenance.html
+
+- name: Restart apache2
+  tags: apache
+  systemd: name=apache2 state=restarted  
+
+- name: Restart apache-htcacheclean
+  tags: apache
+  systemd: name=apache-htcacheclean state=restarted  

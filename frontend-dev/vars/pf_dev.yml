@@ -1,0 +1,42 @@
+# How to include variables files, see http://cheat.readthedocs.io/en/latest/ansible/variables.html#variables-files
+
+# do we want a gui installed?
+gui: false
+
+# fix for installing latest Java
+patch_jdk_install: True
+
+# Git credentials: Remember to use username and not email address
+git_user: "{{private_git_user}}"
+git_password: "{{private_git_password}}"
+
+# are we running in pumphouse dev environment?
+ph_dev: false
+
+# what port to run tomcat & pumphouse on. For PH Dev, PumpHouse runs on 8080, Tomcat runs on 8081. Should be in range 8080-8089
+tomcat_port: 8080
+pumphouse_port: 8080
+
+host_name: local.dev
+
+# site prefix, e.g. dev, demo, at, etc
+site_prefix: dev
+
+# what paths does apache need to know about for pumphouse redirects
+ph_apache_paths: BackEnd
+default_bootstrap: default
+
+# your email address
+your_email: "{{private_your_email}}"
+
+mongo_admin_password: "{{private_mongo_admin_password}}"
+mongo_password: "{{private_mongo_password}}"
+mq_password: "{{private_mq_password}}"
+smtp_password: "{private_smtp_password}}"
+pop3_password: "{{private_pop3_password}}"
+
+ph_owner: tomcat8
+ph_group: tomcat8
+
+# Sets owenship of files / folders
+vm_provisioner: vagrant

@@ -1,0 +1,16 @@
+###############################################################
+# // Clone backend 3
+###############################################################
+
+- name: Clone backend version 3
+  tags: pfcloneph3
+  git: repo="http://{{ git_user }}:{{ git_password }}@{{ git_ph_repo }}" dest="/home/backend-source/repo"
+
+- name: Change owner to parallels
+  tags: pfcloneph3
+  file:
+    path: /home/backend-source/repo
+    state: directory
+    owner: "{{owner}}"
+    group: "{{group}}"
+    recurse: yes

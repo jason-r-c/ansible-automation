@@ -1,0 +1,18 @@
+###############################################################
+# // Establish Owner & Group
+###############################################################
+
+- name: get username
+  tags: whoami
+  command: 'logname'   
+  register: whoami
+
+- name: set owner 
+  tags: whoami
+  set_fact:
+    owner: "{{whoami.stdout}}"
+    
+- name: set group 
+  tags: whoami
+  set_fact:
+    group: "{{owner}}"    
