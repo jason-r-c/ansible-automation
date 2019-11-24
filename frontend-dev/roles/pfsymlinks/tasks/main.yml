@@ -1,40 +1,5 @@
 ###############################################################
-# // Clone PumpHouse 3
+# // Run the script from within the VM
 ###############################################################
 
 - script: /vagrant/env.sh
-
-# - name: Create symlink from {{dev_machine_pumpface_groovy}} to /etc/pumphouse/conf/pumpface.groovy
-#   tags: pfsymlinks
-#   file:
-#     src: "{{dev_machine_pumpface_groovy}}"
-#     dest: /etc/pumphouse/conf/pumpface.groovy
-#     state: link
-
-# AMONIS: core fixtures and aos symlinks for the platfor to run
-
-# - name: "Create symlink from {{dev_machine_webapps_aos_dir}} to /var/lib/tomcat8/webapps/aos"
-#   tags: pfsymlinks
-#   file:
-#     src: "{{dev_machine_webapps_aos_dir}}"
-#     dest: /var/lib/tomcat8/webapps/aos
-#     state: link
-
-# # @JC 9/1/18: Override (using 'force: true') the directory created @ /var/lib/pumphouse/fixtures/core with the symlink below
-# - name: "Create symlink from {{dev_machine_fixtures_core_dir}} to /var/lib/pumphouse/fixtures/core"
-#   tags: pfsymlinks
-#   file:
-#     src: "{{dev_machine_fixtures_core_dir}}"
-#     dest: /var/lib/pumphouse/fixtures/core
-#     state: link
-#     force: true
-
-# # AMONIS: project directories allow multiple different project to be side loaded.
-# # The only one at present is iotaa
-
-# - name: "Create symlink from {{dev_machine_fixtures_iotaa_dir}} to /var/lib/pumphouse/fixtures/iotaa"
-#   tags: pfsymlinks
-#   file:
-#     src: "{{dev_machine_fixtures_iotaa_dir}}"
-#     dest: /var/lib/pumphouse/fixtures/iotaa
-#     state: link
