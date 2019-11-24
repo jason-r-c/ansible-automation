@@ -1,7 +1,7 @@
 ###############################################################
-# // Clone previous PumpHouse configuration via git
+# // Clone previous ph configuration via git
 ###############################################################
 
-- name: Clone previous pumphouse configuration
-  tags: clonepumphouse
-  git: repo="http://{{ git_user }}:{{ git_password }}@{{anthropos_platform_repo}}" dest="/{{ansible_pumphouse}}/{{ansible_pumphouse_config}}"
+- name: Clone previous ph configuration
+  tags: cloneph
+  git: repo="http://{{ git_user }}:{{ git_password }}@{{platform_repo}}" dest="/{{ansible_ph}}/{{ansible_ph_config}}"
