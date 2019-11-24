@@ -54,4 +54,4 @@ done
 
 echo "Now running Gaia fixture..."
 
-curl -k https://admin:r353tFixture@dev.cnect.to/BackEnd/persistence/saveFixture?fixtureName=Gaia"$dropdb"
+curl -k https://@dev.cnect.to/BackEnd/persistence/saveFixture?fixtureName=Gaia"$dropdb"
