@@ -25,7 +25,7 @@
     - { role: install_openjdk }    
     - { role: mongo, tags: ["mongo"] }
     - { role: apache, tags: ["apache"] }
-    - { role: pumphouseconfig, tags: ["pumphouseconfig"] }
+    - { role: phconfig, tags: ["phconfig"] }
     - { role: pf_addgradleproperties, tags: ["pf_addgradleproperties"] }
     - { role: pfsdkman, tags: ["pfsdkman"]}
     - { role: pfcloneph3, tags: ["pfcloneph3"]}
