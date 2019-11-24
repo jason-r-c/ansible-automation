@@ -1,6 +1,6 @@
 # Apache SSL keys
 country: GB
-locality: Wiltshire
-organisation: pumpco
-common_name: pumpco
-company_name: pumpco
+locality: England
+organisation: private
+common_name: private
+company_name: private
