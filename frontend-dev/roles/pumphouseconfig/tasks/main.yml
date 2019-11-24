@@ -1,81 +1,73 @@
 ###############################################################
-# // PumpHouse config
+# // ph config
 ###############################################################
 
 ## ------------------------------------- ##
-## PumpHouse directories and permissions ##
+## ph directories and permissions ##
 ## ------------------------------------- ##
 
-- name: Configure /etc/pumphouse
+- name: Configure /etc/ph
   tags: configureph
   file:
-    path: /etc/pumphouse
+    path: /etc/ph
     state: directory
     owner: "{{ph_owner}}"
     group: "{{ph_group}}"
     mode: 0755
 
-- name: Configure /etc/pumphouse/ldap
+- name: Configure /etc/ph/ldap
   tags: configureph
   file:
-    path: /etc/pumphouse/ldap
+    path: /etc/ph/ldap
     state: directory
     owner: "{{ph_owner}}"
     group: "{{ph_group}}"
     mode: 0755
 
-- name: Configure /etc/pumphouse/conf
+- name: Configure /etc/ph/conf
   tags: configureph
   file:
-    path: /etc/pumphouse/conf
+    path: /etc/ph/conf
     state: directory
     owner: "{{ph_owner}}"
     group: "{{ph_group}}"
     mode: 0755
     
-- name: Copy across local PumpHouse-logging.groovy to /etc/pumphouse/conf/PumpHouse-logging.groovy
+- name: Copy across local ph-logging.groovy to /etc/ph/conf/ph-logging.groovy
   tags: configureph
   template:
-    src: /vagrant-shared/config/pumphouseconfig/PumpHouse-logging.groovy
-    dest: /etc/pumphouse/conf/PumpHouse-logging.groovy
+    src: /vagrant-shared/config/phconfig/ph-logging.groovy
+    dest: /etc/ph/conf/ph-logging.groovy
     owner: "{{ph_owner}}"
     group: "{{ph_group}}"
 
-- name: Copy pumphouse config, setting passwords as we go
+- name: Copy ph config, setting passwords as we go
   tags: configureph, test
   template:
-    src: /vagrant-shared/config/pumphouseconfig/Config.groovy.template
-    dest: /etc/pumphouse/conf/Config.groovy
+    src: /vagrant-shared/config/phconfig/Config.groovy.template
+    dest: /etc/ph/conf/Config.groovy
     owner: "{{ph_owner}}"
     group: "{{ph_group}}"
 
-#- name: Configure Pumphouse 3 Recursively change owner and group to ubuntu on /etc/pumphouse
-#  tags: configureph
-#  file:
-#    path: /etc/pumphouse
-#    owner: "{{ph_owner}}"
-#    group: "{{ph_group}}"
-#    recurse: yes
-
-- name: Configure Pumphouse 4 Create pumphouse and fixures folder at /var/lib
+- name: Configure ph Create pumphouse and fixures folder at /var/lib
   tags: configureph
   file:
-    path: /var/lib/pumphouse/fixtures
+    path: /var/lib/ph/fixtures
     state: directory
     owner: "{{ph_owner}}"
     group: "{{ph_group}}"
     mode: 0755
 
-- name: check for existance of /var/lib/pumphouse/fixtures/core 
+- name: check for existance of /var/lib/ph/fixtures/core 
   tags: configureph
   stat: 
-    path: /var/lib/pumphouse/fixtures/core 
+    path: /var/lib/ph/fixtures/core 
   register: fixtures_core
 
-- name: Configure Pumphouse 4.1 /var/lib/fixtures/core
+- name: Configure ph /var/lib/fixtures/core
   tags: configureph
   file:
-    path: /var/lib/pumphouse/fixtures/core
+    path: /var/lib/ph/fixtures/core
     state: directory
     owner: "{{ph_owner}}"
     group: "{{ph_group}}"
@@ -83,43 +75,43 @@
   when: fixtures_core.stat.exists == False
     
 
-- name: Configure Pumphouse 4.2 /var/lib/fixtures/project1
+- name: Configure ph /var/lib/fixtures/project1
   tags: configureph
   file:
-    path: /var/lib/pumphouse/fixtures/project1
+    path: /var/lib/ph/fixtures/project1
     state: directory
     owner: "{{ph_owner}}"
     group: "{{ph_group}}"
     mode: 0755
 
-- name: Configure Pumphouse 4.3 /var/lib/fixtures/project2
+- name: Configure ph /var/lib/fixtures/project2
   tags: configureph
   file:
-    path: /var/lib/pumphouse/fixtures/project2
+    path: /var/lib/ph/fixtures/project2
     state: directory
     owner: "{{ph_owner}}"
     group: "{{ph_group}}"
     mode: 0755
 
-- name: Configure Pumphouse 4.4 /var/lib/fixtures/project3
+- name: Configure ph /var/lib/fixtures/project3
   tags: configureph
   file:
-    path: /var/lib/pumphouse/fixtures/project3
+    path: /var/lib/ph/fixtures/project3
     state: directory
     owner: "{{ph_owner}}"
     group: "{{ph_group}}"
     mode: 0755
 
-- name: Configure Pumphouse 5 Create uploads folder at /var/lib/pumphouse
+- name: Configure ph Create uploads folder at /var/lib/ph
   tags: configureph
   file:
-    path: /var/lib/pumphouse/uploads
+    path: /var/lib/ph/uploads
     state: directory
     owner: "{{ph_owner}}"
     group: "{{ph_group}}"
     mode: 0755
 
-- name: Configure Pumphouse 6 Create melody log folder at /var/log/melody
+- name: Configure ph Create melody log folder at /var/log/melody
   tags: configureph
   file:
     path: /var/log/melody
@@ -135,15 +127,15 @@
   lineinfile:
     path: /etc/default/tomcat8
     regexp: '^JAVA_OPTS='
-    line: 'JAVA_OPTS="-Djava.awt.headless=true -XX:+CMSClassUnloadingEnabled -XX:+UseConcMarkSweepGC -server -Xms1024M -Xmx2048M -XX:MaxMetaspaceSize=1G -Dlogging.config=/etc/pumphouse/conf/PumpHouse-logging.groovy  -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.password.file=/etc/pumphouse/conf/jmxremote.password -Dcom.sun.management.jmxremote.access.file=/etc/pumphouse/conf/jmxremote.access -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.port=8123 -Djava.rmi.server.hostname={{host_name}} -Dcom.sun.management.jmxremote.rmi.port=8124"'
+    line: 'JAVA_OPTS="-Djava.awt.headless=true -XX:+CMSClassUnloadingEnabled -XX:+UseConcMarkSweepGC -server -Xms1024M -Xmx2048M -XX:MaxMetaspaceSize=1G -Dlogging.config=/etc/ph/conf/ph-logging.groovy  -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.password.file=/etc/ph/conf/jmxremote.password -Dcom.sun.management.jmxremote.access.file=/etc/ph/conf/jmxremote.access -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.port=8123 -Djava.rmi.server.hostname={{host_name}} -Dcom.sun.management.jmxremote.rmi.port=8124"'
     state: present
     
 - name: Tomcat jmx access file
   tags: configureph
   when: vm_type != "ph_dev"
   template:
-    src: /vagrant-shared/config/pumphouseconfig/jmxremote.access.template
-    dest: /etc/pumphouse/conf/jmxremote.access
+    src: /vagrant-shared/config/phconfig/jmxremote.access.template
+    dest: /etc/ph/conf/jmxremote.access
     owner: "{{ph_owner}}"
     group: "{{ph_group}}"
     
@@ -151,17 +143,17 @@
   tags: configureph
   when: vm_type != "ph_dev"
   template:
-    src: /vagrant-shared/config/pumphouseconfig/jmxremote.password.template
-    dest: /etc/pumphouse/conf/jmxremote.password
+    src: /vagrant-shared/config/phconfig/jmxremote.password.template
+    dest: /etc/ph/conf/jmxremote.password
     owner: "{{ph_owner}}"
     group: "{{ph_group}}"
     mode: 0600
     
-- name: pumphouse encryption key
+- name: ph encryption key
   tags: configureph
   template:
-    src: /vagrant-shared/config/pumphouseconfig/keyfile.template
-    dest: /etc/pumphouse/conf/keyfile
+    src: /vagrant-shared/config/phconfig/keyfile.template
+    dest: /etc/ph/conf/keyfile
     owner: "{{ph_owner}}"
     group: "{{ph_group}}"
     mode: 0600    
