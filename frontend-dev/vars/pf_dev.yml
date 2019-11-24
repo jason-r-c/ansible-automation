@@ -10,19 +10,19 @@ patch_jdk_install: True
 git_user: "{{private_git_user}}"
 git_password: "{{private_git_password}}"
 
-# are we running in pumphouse dev environment?
+# are we running in ph dev environment?
 ph_dev: false
 
-# what port to run tomcat & pumphouse on. For PH Dev, PumpHouse runs on 8080, Tomcat runs on 8081. Should be in range 8080-8089
+# what port to run tomcat & ph on. For PH Dev, ph runs on 8080, Tomcat runs on 8081. Should be in range 8080-8089
 tomcat_port: 8080
-pumphouse_port: 8080
+ph_port: 8080
 
 host_name: local.dev
 
 # site prefix, e.g. dev, demo, at, etc
 site_prefix: dev
 
-# what paths does apache need to know about for pumphouse redirects
+# what paths does apache need to know about for ph redirects
 ph_apache_paths: BackEnd
 default_bootstrap: default
 
